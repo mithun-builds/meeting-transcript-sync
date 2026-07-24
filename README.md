@@ -12,7 +12,21 @@ owner's** Drive ("Meet Recordings" folder), mixed together with transcripts of
 every other meeting they host. If you're an attendee, the files are shared with
 you individually, but there's no folder you can share onward. This script gives
 each meeting its own folder, filled automatically, with clean standardized
-filenames like `WDR - 2026/07/22 10:00 IST`.
+filenames:
+
+```text
+Before — buried in the owner's "Meet Recordings":
+  Weekly Delivery Review (WDR) - 2026/07/22 10:00 GMT+05:30 - Transcript
+  Some Other Meeting - 2026/07/22 14:30 GMT+05:30 - Transcript
+  1:1 Alice - 2026/07/23 09:00 GMT+05:30 - Transcript
+  ...
+
+After — your own shareable folder per meeting:
+  WDR Transcripts/
+    WDR - 2026/07/15 10:00 IST
+    WDR - 2026/07/22 10:00 IST
+    WDR - 2026/07/29 10:00 IST
+```
 
 It works for both cases:
 
@@ -23,6 +37,15 @@ It works for both cases:
 Privacy note: the script uses Drive search, which can only ever surface files
 you already have permission to see. It cannot access anything else in anyone's
 Drive.
+
+## Requirements
+
+- A **Google Workspace** account. Meet transcription is available on Business
+  Standard/Plus, Enterprise, Education Plus, and similar editions — it is not
+  offered on free personal Gmail, so there are no transcripts to sync there.
+- Transcription enabled for the meetings, and access to the transcript files
+  (Google auto-shares them with the meeting host and co-hosts; attendees need
+  the host to share).
 
 ## Setup
 
@@ -86,8 +109,8 @@ after a Google account password change. The failure-notification setting in
 step 6 emails you if anything breaks.
 
 **`setupTrigger` was run more than once.**
-Each run creates another trigger. Harmless (the ID check prevents double
-copies) but untidy — delete extras on the Triggers page.
+No problem — it's idempotent. It removes any existing triggers for the sync
+function before creating a new one, so you always end up with exactly one.
 
 ## Optional: clasp
 
@@ -102,3 +125,7 @@ clasp push
 ```
 
 `appsscript.json` in this repo sets the script timezone and V8 runtime.
+
+## License
+
+MIT — see [LICENSE](LICENSE).

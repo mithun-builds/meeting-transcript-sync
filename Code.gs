@@ -74,9 +74,11 @@ function syncAllTranscripts() {
 
     // Drive search can only surface files you already have access to —
     // it can never see anything else in another person's Drive.
+    // Single quotes in names are escaped so titles like "Ravi's Standup" work.
+    const esc = function (s) { return s.replace(/'/g, "\\'"); };
     const query =
-      "title contains '" + meeting.searchTerm + "'" +
-      " and title contains '" + CONFIG.TRANSCRIPT_KEYWORD + "'" +
+      "title contains '" + esc(meeting.searchTerm) + "'" +
+      " and title contains '" + esc(CONFIG.TRANSCRIPT_KEYWORD) + "'" +
       ' and trashed = false';
 
     const files = DriveApp.searchFiles(query);
@@ -146,13 +148,25 @@ function uniqueName(baseName, folder) {
   return name;
 }
 
-/** Run ONCE to schedule the daily sync (~1 PM script timezone). */
+/**
+ * Schedules the daily sync (~1 PM script timezone). Idempotent — safe to
+ * run any number of times; existing triggers for the sync function are
+ * removed first, so you always end up with exactly one.
+ */
 function setupTrigger() {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === 'syncAllTranscripts') {
+      ScriptApp.deleteTrigger(t);
+    }
+  });
+
   ScriptApp.newTrigger('syncAllTranscripts')
     .timeBased()
     .everyDays(1)
     .atHour(13)
     .create();
+
+  Logger.log('Daily trigger installed (exactly one).');
 }
 
 /** Reset the synced-file memory (next run re-syncs everything). */
